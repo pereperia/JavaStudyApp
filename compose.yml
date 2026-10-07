@@ -1,0 +1,45 @@
+services:
+  kurohon:
+    build: .
+    container_name: kurohon
+    restart: unless-stopped
+
+    # ポートはホストに出さない。nginx からだけ届けばよい。
+    expose:
+      - "8080"
+
+    volumes:
+      - ./data:/app/data
+      - ./web:/app/web:ro
+
+    env_file:
+      - .env
+
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 3 bash -c '</dev/tcp/127.0.0.1/8080' || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: kurohon-nginx
+    restart: unless-stopped
+
+    depends_on:
+      - kurohon
+
+    ports:
+      # tailscale serve が 127.0.0.1:8080 に流す口
+      - "127.0.0.1:8080:8080"
+
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./web:/srv/web:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/style.css || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

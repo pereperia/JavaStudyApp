@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ログイン — 黒本記録</title>
+<meta name="theme-color" content="#1a1a1e">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/icons/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="stylesheet" href="/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="/style.css">
+<style>
+  body { padding-bottom: 0; display: grid; place-items: center; min-height: 100dvh; }
+  .login-wrap { width: min(360px, 90vw); }
+  .login-head { text-align: center; margin-bottom: 1.5rem; }
+  .login-head img { width: 56px; height: 56px; border-radius: 14px; }
+  .login-head h1 { font-size: 1.1rem; font-weight: 600; margin: 0.75rem 0 0; }
+  .login-field { margin-bottom: 0.75rem; }
+  .login-field label {
+    display: block; font-size: 0.75rem; color: #9a9aa6; margin-bottom: 0.3rem;
+  }
+  .login-btn {
+    width: 100%; min-height: 46px; border-radius: 11px; font-weight: 600;
+    background: var(--bs-primary); border: 0; color: #fff; font-size: 0.95rem;
+    cursor: pointer; margin-top: 0.5rem;
+  }
+  .login-btn:disabled { opacity: 0.5; }
+  #err { min-height: 1.4rem; font-size: 0.82rem; color: var(--ng); margin-top: 0.6rem; }
+</style>
+</head>
+<body>
+
+<main class="login-wrap">
+  <div class="login-head">
+    <img src="/icons/icon-192.png" alt="">
+    <h1>黒本記録</h1>
+  </div>
+
+  <form id="form" class="card" style="padding: 1.1rem;">
+    <div class="login-field">
+      <label for="user">名前</label>
+      <input id="user" name="user" class="note-input" autocomplete="username" required>
+    </div>
+    <div class="login-field">
+      <label for="password">パスワード</label>
+      <input id="password" name="password" type="password" class="note-input"
+             autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="login-btn" id="submit">ログイン</button>
+    <div id="err" role="alert"></div>
+  </form>
+</main>
+
+<script>
+  const form = document.getElementById('form');
+  const err = document.getElementById('err');
+  const submit = document.getElementById('submit');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    err.textContent = '';
+    submit.disabled = true;
+
+    const body = new URLSearchParams({
+      user: document.getElementById('user').value,
+      password: document.getElementById('password').value
+    });
+
+    fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString()
+    })
+      .then(function (res) {
+        if (res.ok) {
+          location.href = '/';
+          return null;
+        }
+        return res.text().then(function (t) { throw new Error(t || 'ログインできません'); });
+      })
+      .catch(function (e) {
+        err.textContent = e.message;
+        submit.disabled = false;
+        document.getElementById('password').value = '';
+      });
+  });
+</script>
+</body>
+</html>

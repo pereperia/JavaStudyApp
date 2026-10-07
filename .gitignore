@@ -1,0 +1,15 @@
+# ビルド成果物
+bin/
+*.class
+
+# 学習データ（個人の記録はリポジトリに含めない）
+data/*
+!data/.gitkeep
+progress.md
+
+# 環境変数
+.env
+
+# その他
+*.zip
+*Zone.Identifier

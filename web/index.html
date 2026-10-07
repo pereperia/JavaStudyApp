@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>黒本記録</title>
+
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#1a1a1e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="黒本">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/icons/favicon-64.png" sizes="64x64" type="image/png">
+
+<link rel="stylesheet" href="/vendor/bootstrap.min.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<nav class="navbar sticky-top app-nav">
+  <div class="container-fluid gap-2">
+    <span class="navbar-brand mb-0 d-flex align-items-center gap-2">
+      <img src="/icons/icon-192.png" alt="" width="26" height="26" class="rounded">
+      <span class="fw-semibold" id="navTitle">今日の復習</span>
+    </span>
+    <span class="d-flex align-items-center gap-2">
+      <select id="book" class="form-select form-select-sm w-auto" aria-label="教材"></select>
+      <button type="button" class="btn btn-sm d-none" id="logout" title="ログアウト">出</button>
+    </span>
+  </div>
+</nav>
+
+<main class="container py-3">
+
+  <!-- ============ 復習タブ ============ -->
+  <div id="tab-review" class="tab-panel">
+
+    <section class="card mb-3 review-card" id="reviewCard">
+      <div class="card-header d-flex align-items-center">
+        <span>今日の復習</span>
+        <span class="badge text-bg-primary ms-2" id="reviewCount">0</span>
+        <span class="ms-auto small text-secondary" id="reviewNote"></span>
+      </div>
+      <ul class="list-group list-group-flush" id="reviewList"></ul>
+    </section>
+
+    <p class="small text-secondary px-1">
+      正解すると次の間隔が 1 → 3 → 7 → 14 → 30 日と伸び、間違えると 1 日に戻ります。
+    </p>
+  </div>
+
+  <!-- ============ 記録タブ ============ -->
+  <div id="tab-record" class="tab-panel d-none">
+
+    <section class="card mb-3">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <span>章を選ぶ</span>
+        <span class="legend">
+          <i class="dot dot-ok"></i>正解
+          <i class="dot dot-ng"></i>不正解
+          <i class="dot dot-none"></i>未着手
+        </span>
+      </div>
+      <div class="list-group list-group-flush" id="chapterList"></div>
+    </section>
+
+    <section class="card mb-3">
+      <div class="card-header d-flex align-items-center gap-2">
+        <span id="chapterTitle">問題一覧</span>
+        <span class="small text-secondary" id="chapterInfo"></span>
+        <select id="topicFilter" class="form-select form-select-sm w-auto ms-auto" aria-label="分野で絞り込む"></select>
+      </div>
+      <div class="card-body">
+        <div class="mode-switch mb-2" role="group" aria-label="タップの動作">
+          <button type="button" class="mode-btn active" data-mode="record">タップで記録</button>
+          <button type="button" class="mode-btn" data-mode="detail">タップで詳細</button>
+        </div>
+        <p class="small text-secondary mb-2" id="modeHint">
+          タップするたびに <span class="text-body">未 → ○ → × → 未</span> と切り替わります。
+        </p>
+        <div id="grid" class="q-grid"></div>
+      </div>
+    </section>
+
+    <section class="card mb-3 d-none" id="detailCard">
+      <div class="card-header d-flex align-items-center">
+        <span id="detailTitle">問題の詳細</span>
+        <button class="btn btn-sm btn-link ms-auto text-secondary p-0" id="detailClose">閉じる</button>
+      </div>
+      <div class="card-body">
+        <div class="small text-secondary mb-1">分野（topic）</div>
+        <div class="d-flex gap-2 mb-3">
+          <input id="detailTopic" class="note-input" list="topicOptions" maxlength="50"
+                 placeholder="例: ラムダ式、例外、record">
+          <datalist id="topicOptions"></datalist>
+          <button class="btn btn-sm" id="detailTopicSave">保存</button>
+        </div>
+        <div class="small text-secondary mb-1">周回の履歴</div>
+        <ul class="list-group list-group-flush" id="detailHistory"></ul>
+      </div>
+    </section>
+
+    <section class="card mb-3 d-none" id="selectedCard">
+      <div class="card-header d-flex align-items-center">
+        <span>今回の記録</span>
+        <span class="badge text-bg-primary ms-2" id="selCount">0</span>
+        <button class="btn btn-sm btn-link ms-auto text-secondary p-0" id="clearSel">クリア</button>
+      </div>
+      <ul class="list-group list-group-flush" id="selectedList"></ul>
+
+      <div class="card-body pt-0">
+        <div class="date-row">
+          <label class="small text-secondary" for="answeredOn">解いた日</label>
+          <input type="date" id="answeredOn" class="note-input date-input">
+          <button type="button" class="btn btn-sm" id="answeredToday">今日</button>
+        </div>
+        <p class="small mb-0 d-none" id="pastWarn">
+          過去の日付で記録します。時刻は残らず、復習予定もこの日を基準に計算されます。
+        </p>
+      </div>
+    </section>
+
+    <section class="card mb-3">
+      <button class="card-header w-100 text-start d-flex align-items-center btn-toggle" id="notesToggle"
+              aria-expanded="false" aria-controls="notesList">
+        <span>この章のメモ</span>
+        <span class="badge text-bg-secondary ms-2" id="noteCount">0</span>
+        <span class="chevron ms-auto">⌄</span>
+      </button>
+      <ul class="list-group list-group-flush d-none" id="notesList"></ul>
+    </section>
+  </div>
+
+  <!-- ============ 穴タブ ============ -->
+  <div id="tab-gaps" class="tab-panel d-none">
+
+    <section class="row g-2 mb-3" aria-label="穴のサマリー">
+      <div class="col-4">
+        <div class="stat">
+          <div class="stat-label">残っている穴</div>
+          <div class="stat-value" id="gapOpen">–</div>
+          <div class="stat-sub">問</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat">
+          <div class="stat-label">埋まった穴</div>
+          <div class="stat-value stat-ok" id="gapClosed">–</div>
+          <div class="stat-sub">問</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat">
+          <div class="stat-label">1日あたり</div>
+          <div class="stat-value" id="gapPace">–</div>
+          <div class="stat-sub" id="gapDaysLeft">– 日</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card mb-3">
+      <div class="card-header d-flex align-items-center gap-2">
+        <span>原因の内訳</span>
+        <label class="ms-auto small text-secondary" for="examDate">試験日</label>
+        <input type="date" id="examDate" class="note-input date-input" value="2026-11-30">
+      </div>
+      <div class="card-body">
+        <div class="bar cause-bar mb-2">
+          <span class="seg-k" id="segK"></span>
+          <span class="seg-u" id="segU"></span>
+          <span class="seg-c" id="segC"></span>
+        </div>
+        <div class="cause-legend small">
+          <span><i class="dot dot-k"></i>知識 <b id="cntK">0</b></span>
+          <span><i class="dot dot-u"></i>理解 <b id="cntU">0</b></span>
+          <span><i class="dot dot-c"></i>ケアレス <b id="cntC">0</b></span>
+          <span><i class="dot dot-none"></i>未分類 <b id="cntN">0</b></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card mb-3">
+      <div class="card-header d-flex align-items-center">
+        <span>穴の一覧</span>
+        <span class="ms-auto small text-secondary">再テスト日の早い順</span>
+      </div>
+      <ul class="list-group list-group-flush" id="gapList"></ul>
+    </section>
+  </div>
+
+  <!-- ============ 統計タブ ============ -->
+  <div id="tab-stats" class="tab-panel d-none">
+
+    <section class="row g-2 mb-3" aria-label="全体サマリー">
+      <div class="col-4">
+        <div class="stat">
+          <div class="stat-label">着手</div>
+          <div class="stat-value" id="statAnswered">–</div>
+          <div class="stat-sub" id="statTotal">/ –</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat">
+          <div class="stat-label">正答率</div>
+          <div class="stat-value" id="statAccuracy">–</div>
+          <div class="stat-sub" id="statCorrect">– / –</div>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="stat">
+          <div class="stat-label">未着手</div>
+          <div class="stat-value" id="statUntouched">–</div>
+          <div class="stat-sub">問</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card mb-3">
+      <div class="card-header d-flex align-items-center">
+        <span>学習の記録</span>
+        <span class="ms-auto small text-secondary" id="streak"></span>
+      </div>
+      <div class="card-body">
+        <div class="heat-scroll">
+          <div id="heatmap" class="heatmap"></div>
+        </div>
+        <div class="heat-foot small">
+          <span id="heatRange"></span>
+          <span class="ms-auto d-flex align-items-center gap-1">
+            少
+            <i class="heat lv0"></i><i class="heat lv1"></i><i class="heat lv2"></i>
+            <i class="heat lv3"></i><i class="heat lv4"></i>
+            多
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card mb-3">
+      <div class="card-header d-flex align-items-center">
+        <span>時間帯別の解答数</span>
+        <span class="ms-auto small text-secondary" id="hourMeasured"></span>
+      </div>
+      <div class="card-body">
+        <div class="hours" id="hours" role="img" aria-label="時間帯ごとの解答数"></div>
+        <div class="hour-axis">
+          <span>0</span><span>6</span><span>12</span><span>18</span><span>23</span>
+        </div>
+        <ul class="hour-notes" id="hourNotes"></ul>
+      </div>
+    </section>
+
+    <section class="card mb-3">
+      <div class="card-header d-flex align-items-center">
+        <span>分野別の成績</span>
+        <span class="badge text-bg-secondary ms-2" id="topicCount">0</span>
+      </div>
+      <div class="list-group list-group-flush" id="topicList"></div>
+    </section>
+  </div>
+
+</main>
+
+<div class="action-bar d-none" id="actionBar">
+  <div class="container d-flex align-items-center gap-2">
+    <span class="small flex-grow-1" id="msg"></span>
+    <button id="send" class="btn btn-primary px-4" disabled>記録する</button>
+  </div>
+</div>
+
+<nav class="tabbar" role="tablist" aria-label="画面の切り替え">
+  <button type="button" class="tab-btn active" data-tab="review" role="tab" aria-selected="true">
+    <span class="tab-ico" aria-hidden="true">⟳</span>
+    <span class="tab-label">復習</span>
+    <span class="tab-badge d-none" id="tabReviewBadge">0</span>
+  </button>
+  <button type="button" class="tab-btn" data-tab="record" role="tab" aria-selected="false">
+    <span class="tab-ico" aria-hidden="true">▦</span>
+    <span class="tab-label">記録</span>
+  </button>
+  <button type="button" class="tab-btn" data-tab="gaps" role="tab" aria-selected="false">
+    <span class="tab-ico" aria-hidden="true">◍</span>
+    <span class="tab-label">穴</span>
+    <span class="tab-badge d-none" id="tabGapBadge">0</span>
+  </button>
+  <button type="button" class="tab-btn" data-tab="stats" role="tab" aria-selected="false">
+    <span class="tab-ico" aria-hidden="true">▤</span>
+    <span class="tab-label">統計</span>
+  </button>
+</nav>
+
+<script src="/app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js');
+    });
+  }
+</script>
+</body>
+</html>

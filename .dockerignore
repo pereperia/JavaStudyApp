@@ -1,0 +1,6 @@
+bin/
+data/
+db_backup/
+.git/
+*.zip
+progress.md
