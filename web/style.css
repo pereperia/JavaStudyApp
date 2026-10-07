@@ -153,7 +153,16 @@ body {
   transition: transform 0.08s ease, background 0.12s ease;
 }
 .q:active { transform: scale(0.94); }
-.q .mark { font-size: 0.7rem; line-height: 1; opacity: 0.85; }
+.q .mark { font-size: 0.7rem; line-height: 1; opacity: 0.85; min-height: 0.7rem; }
+/* 未着手は記号を出さず、小さな点だけにする */
+.q .mark:empty::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--none);
+}
 
 .q.ok { background: rgba(52, 211, 153, 0.16); border-color: rgba(52, 211, 153, 0.45); color: var(--ok); }
 .q.ng { background: rgba(251, 113, 133, 0.16); border-color: rgba(251, 113, 133, 0.45); color: var(--ng); }

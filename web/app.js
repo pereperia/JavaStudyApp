@@ -865,7 +865,7 @@ function stateClass(q, mark) {
 
 function markLabel(q, mark) {
   if (mark) return mark.result === 'y' ? '○' : '×';
-  if (q.correct === null) return '–';
+  if (q.correct === null) return '';
   return (q.correct ? '○' : '×') + (q.round > 1 ? q.round : '');
 }
 
