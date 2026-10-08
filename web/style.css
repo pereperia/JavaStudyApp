@@ -661,3 +661,52 @@ body.has-action-bar { padding-bottom: calc(124px + env(safe-area-inset-bottom));
 .hour-notes li { display: flex; gap: 0.6rem; }
 .hn-label { color: #8a8a96; min-width: 6.5rem; }
 .hn-value { color: var(--bs-body-color); font-variant-numeric: tabular-nums; }
+
+
+/* =================================================================== */
+/*  見やすさの調整（スクロール量を減らす）                              */
+/* =================================================================== */
+
+/* ヘッダー：アプリ名を小さく添える */
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-sub { font-size: 0.62rem; color: #8a8a96; letter-spacing: 0.06em; font-weight: 500; }
+
+/* 期限切れの目印 */
+.tag-overdue {
+  display: inline-block;
+  font-size: 0.64rem;
+  font-weight: 600;
+  line-height: 1.5;
+  padding: 0 0.45rem;
+  margin-right: 0.4rem;
+  border-radius: 99px;
+  background: rgba(251, 113, 133, 0.14);
+  color: var(--ng);
+  vertical-align: 1px;
+}
+
+/* 章リスト：行を詰める */
+.chapter-row { padding: 0.45rem 0.9rem; }
+
+/* 問題グリッド：タイルを小さくして 1 画面に多く並べる */
+.q-grid { grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 6px; }
+.q { min-height: 42px; border-radius: 10px; font-size: 0.85rem; }
+
+/* 今日の復習：行の高さを抑える */
+.review-row { padding: 0.5rem 0.9rem; gap: 0.25rem 0.75rem; }
+.rv-name { font-size: 0.9rem; }
+.rv-btn { width: 42px; height: 36px; font-size: 1rem; border-radius: 9px; }
+.rv-hint { font-size: 0.7rem; }
+
+/* 穴の一覧：原因と再テスト日を横に並べる */
+.gap-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 0.4rem 0.6rem;
+}
+.gap-row > *:not(.cause-chips):not(.gap-due) { grid-column: 1 / -1; }
+.chip { min-height: 28px; padding: 0.2rem 0.65rem; font-size: 0.72rem; }
+.gap-due { flex-direction: column; align-items: flex-end; gap: 2px; }
+.gap-due-label { font-size: 0.66rem; }
+.date-input { min-width: 8.4rem; padding: 0.2rem 0.45rem; font-size: 0.8rem; }

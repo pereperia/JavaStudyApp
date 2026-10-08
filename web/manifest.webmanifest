@@ -1,6 +1,6 @@
 {
-  "name": "黒本記録",
-  "short_name": "黒本",
+  "name": "JavaStudyApp",
+  "short_name": "JavaStudy",
   "description": "Java 資格試験の問題演習記録",
   "start_url": "/",
   "scope": "/",

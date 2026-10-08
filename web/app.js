@@ -316,7 +316,7 @@ function gapRow(g) {
   label.className = 'gap-due-label';
   label.textContent = '再テスト';
   if (g.overdueDays > 0) {
-    label.textContent += '（' + g.overdueDays + '日遅れ）';
+    label.textContent += ' · 期限切れ';
     label.classList.add('overdue');
   }
 
@@ -401,9 +401,14 @@ function reviewRow(item) {
   const meta = document.createElement('span');
   meta.className = 'rv-meta';
   let text = item.intervalDays + '日間隔';
-  if (item.overdueDays > 0) text += ' · ' + item.overdueDays + '日遅れ';
   if (item.topic) text += ' · ' + item.topic;
   meta.textContent = text;
+  if (item.overdueDays > 0) {
+    const tag = document.createElement('span');
+    tag.className = 'tag-overdue';
+    tag.textContent = '期限切れ';
+    meta.prepend(tag);
+  }
 
   head.appendChild(name);
   head.appendChild(meta);

@@ -38,6 +38,7 @@ Java Silver の問題集（黒本・紫本）の解答を記録し、**間違え
 - **集計**：章・分野ごとの正答率、日別の解答数、解く時間帯の傾向
 - **教材の切り替え**：黒本・紫本など、教材ごとに別のデータベースで管理
 - **スマホ対応**：PWA としてホーム画面に追加でき、アプリのように使える
+- **ログイン**：パスワードを設定すると、ログイン画面で保護される（未設定なら認証なし）
 
 ## 技術構成
 
@@ -102,17 +103,17 @@ javac -encoding UTF-8 -d bin -cp lib/h2-2.2.224.jar $(find src -name "*.java")
 java -cp "bin:lib/h2-2.2.224.jar" com.pereperia.Main web
 ```
 
-### 見本データを入れる（任意）
+### 見本データで試す
 
-一度起動してテーブルを作ったあと、次を実行すると見本の解答記録が入ります。
+次のスクリプトで、ビルド・見本データの投入・起動までまとめて行えます。
 
 ```bash
-java -Dfile.encoding=UTF-8 -cp lib/h2-2.2.224.jar org.h2.tools.RunScript \
-  -url "jdbc:h2:./data/kurohon;AUTO_SERVER=TRUE" -user sa -password "" \
-  -script sql/demo.sql
+scripts/demo.sh
 ```
 
-※ `sql/demo.sql` は動作確認用のデータで、実際の学習記録ではありません。
+`http://localhost:8080` を開き、ユーザー名 `demo` / パスワード `demo` でログインします。
+
+※ 見本データ（`sql/demo.sql`）は動作確認用で、実際の学習記録ではありません。日付は投入した日を基準に作られます。
 
 ---
 
