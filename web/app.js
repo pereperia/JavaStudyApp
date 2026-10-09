@@ -833,7 +833,7 @@ function renderGrid() {
     if (state.detailQuestion && state.detailQuestion.id === q.id) div.classList.add('focus');
 
     div.innerHTML = '<span>' + q.number + '</span>' +
-                    '<span class="mark">' + markLabel(q, mark) + '</span>';
+                    '<span class="q-mark">' + markLabel(q, mark) + '</span>';
 
     div.addEventListener('click', () => {
       if (state.mode === 'detail') {
