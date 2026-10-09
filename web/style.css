@@ -153,16 +153,16 @@ body {
   transition: transform 0.08s ease, background 0.12s ease;
 }
 .q:active { transform: scale(0.94); }
-.q .q-mark { font-size: 0.7rem; line-height: 1; opacity: 0.85; min-height: 0.7rem; }
-/* 未着手は記号を出さず、小さな点だけにする */
-.q .q-mark:empty::before {
-  content: "";
-  display: inline-block;
-  width: 4px;
-  height: 4px;
+.q .q-mark { display: block; font-size: 0.6rem; line-height: 1; opacity: 0.85; }
+/* 周回数がないときは小さな点を出す（色はタイルの状態に合わせる） */
+.q .q-mark:empty {
+  width: 5px;
+  height: 5px;
   border-radius: 99px;
-  background: var(--none);
+  background: currentColor;
+  opacity: 0.55;
 }
+.q:not(.ok):not(.ng) .q-mark:empty { opacity: 0.3; }
 
 .q.ok { background: rgba(52, 211, 153, 0.16); border-color: rgba(52, 211, 153, 0.45); color: var(--ok); }
 .q.ng { background: rgba(251, 113, 133, 0.16); border-color: rgba(251, 113, 133, 0.45); color: var(--ng); }

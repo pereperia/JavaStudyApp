@@ -869,9 +869,9 @@ function stateClass(q, mark) {
 }
 
 function markLabel(q, mark) {
-  if (mark) return mark.result === 'y' ? '○' : '×';
-  if (q.correct === null) return '';
-  return (q.correct ? '○' : '×') + (q.round > 1 ? q.round : '');
+  // 正誤はタイルの色で分かるので、記号は出さない。2 周目以降だけ周回数を出す
+  if (mark || q.correct === null) return '';
+  return q.round > 1 ? q.round + '周' : '';
 }
 
 function setMode(mode) {
