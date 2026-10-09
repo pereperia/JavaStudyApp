@@ -2,7 +2,7 @@
 // 方針: ネットワーク優先。オフライン時だけキャッシュを返す。
 // 学習記録アプリなので「古い画面が出続ける」事故を避ける。
 
-const CACHE = 'kurohon-v5';
+const CACHE = 'kurohon-v6';
 const SHELL = [
   '/',
   '/manifest.webmanifest',

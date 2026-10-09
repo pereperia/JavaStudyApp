@@ -720,3 +720,6 @@ body.has-action-bar { padding-bottom: calc(124px + env(safe-area-inset-bottom));
   padding: 0.3rem 0.55rem;
   white-space: nowrap;
 }
+
+/* タイルを小さくしたので、分野ありの下線は点と重なる。表示しない（分野は「すべての分野」で絞り込める） */
+.q.has-topic::before { display: none; }
